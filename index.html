@@ -23,7 +23,7 @@ iframe {width:100%; height:400px; border-radius:10px; margin-top:10px;}
 <body>
 
 <header>
-<img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZH" style="width:120px; display:block; margin:0 auto 10px;">
+<img src="Logohttps://upload.wikimedia.org/wikipedia/commons/5/5c/Conalep_logo.svg" style="width:120px; display:block; margin:0 auto 10px;">
 <h1 contenteditable="false" id="titulo">Proyecto Redes LAN y Legislación</h1>
 <button id="adminBtn" onclick="login()">Admin</button>
 </header>
@@ -32,7 +32,7 @@ iframe {width:100%; height:400px; border-radius:10px; margin-top:10px;}
 <div class="card">
 <h2>Uso de las Redes LAN en una Organización</h2>
 <p>Las redes LAN permiten conectar computadoras dentro de una organización para compartir recursos como internet, archivos e impresoras. Facilitan la comunicación interna, mejoran la productividad y permiten una administración centralizada.</p>
-<img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Network_diagram.png">
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Network_diagram.png" alt="Diagrama de red">
 </div>
 </section>
 
@@ -47,7 +47,7 @@ iframe {width:100%; height:400px; border-radius:10px; margin-top:10px;}
 <div class="card">
 <h2>Sistema de Cableado Estructurado</h2>
 <p>Es la organización de cables para transmitir datos eficientemente. Incluye cables UTP, fibra óptica, racks y paneles de conexión.</p>
-<img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Structured_cabling.jpg">
+<img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Structured_cabling.jpg" alt="Cableado estructurado">
 </div>
 </section>
 
@@ -60,7 +60,7 @@ iframe {width:100%; height:400px; border-radius:10px; margin-top:10px;}
 <li>Access Point: red inalámbrica</li>
 <li>Servidor: almacena información</li>
 </ul>
-<img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Router.jpg">
+<img src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Router.jpg" alt="Router">
 </div>
 </section>
 
@@ -185,6 +185,63 @@ if(localStorage.getItem("proyectoLAN")){
 document.body.innerHTML=localStorage.getItem("proyectoLAN");
 }
 }
+</script>
+
+
+<section data-aos="fade-up">
+<div class="card">
+<h2>Diagrama Interactivo de Red</h2>
+<canvas id="redCanvas" width="800" height="400" style="background:#0f172a; border-radius:10px;"></canvas>
+<p>Haz clic en los equipos para ver su función.</p>
+</div>
+</section>
+
+<script>
+const canvas = document.getElementById("redCanvas");
+const ctx = canvas.getContext("2d");
+
+const dispositivos = [
+ {x:100,y:200,text:"PC",info:"Computadora del usuario"},
+ {x:300,y:200,text:"Switch",info:"Conecta dispositivos"},
+ {x:500,y:200,text:"Router",info:"Distribuye internet"},
+ {x:700,y:200,text:"Internet",info:"Red global"}
+];
+
+function dibujar(){
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ dispositivos.forEach((d,i)=>{
+  ctx.fillStyle="#38bdf8";
+  ctx.beginPath();
+  ctx.arc(d.x,d.y,30,0,Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle="white";
+  ctx.fillText(d.text,d.x-15,d.y+5);
+
+  if(i>0){
+    ctx.beginPath();
+    ctx.moveTo(dispositivos[i-1].x+30,dispositivos[i-1].y);
+    ctx.lineTo(d.x-30,d.y);
+    ctx.strokeStyle="white";
+    ctx.stroke();
+  }
+ });
+}
+
+dibujar();
+
+canvas.addEventListener("click",function(e){
+ const rect = canvas.getBoundingClientRect();
+ const x = e.clientX - rect.left;
+ const y = e.clientY - rect.top;
+
+ dispositivos.forEach(d=>{
+  let dx = x - d.x;
+  let dy = y - d.y;
+  if(Math.sqrt(dx*dx+dy*dy)<30){
+    alert(d.text+": "+d.info);
+  }
+ });
+});
 </script>
 
 </body>
