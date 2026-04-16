@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mario Arvizu | Portafolio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+html { scroll-behavior: smooth; }
+
+.fade-in {
+opacity: 0;
+transform: translateY(20px);
+transition: 0.6s;
+}
+.fade-in.visible {
+opacity: 1;
+transform: translateY(0);
+}
+</style>
+</head>
+
+<body class="bg-gray-950 text-gray-200 font-sans">
+
+<!-- LOGIN -->
+<div id="loginScreen" class="fixed inset-0 bg-black flex items-center justify-center z-50">
+<div class="bg-gray-800 p-8 rounded-xl w-80 text-center">
+<h2 class="text-2xl text-blue-400 mb-4 font-bold">Admin Login</h2>
+
+<input id="user" type="text" placeholder="Usuario"
+class="w-full mb-3 p-2 rounded bg-gray-700">
+
+<input id="pass" type="password" placeholder="Contraseña"
+class="w-full mb-4 p-2 rounded bg-gray-700">
+
+<button onclick="login()" class="w-full bg-blue-600 py-2 rounded">
+Entrar
+</button>
+
+<p id="error" class="text-red-400 mt-3 hidden">Datos incorrectos</p>
+</div>
+</div>
+
+<!-- NAVBAR -->
+<header class="fixed w-full bg-gray-900/80 backdrop-blur border-b border-gray-800 z-40">
+<div class="max-w-6xl mx-auto flex justify-between items-center p-4">
+
+<h1 class="text-blue-400 font-bold">Mario.dev</h1>
+
+<nav class="hidden md:flex gap-6">
+<a href="#inicio">Inicio</a>
+<a href="#sobre">Sobre</a>
+<a href="#skills">Skills</a>
+<a href="#proyectos">Proyectos</a>
+<a href="#galeria">Galería</a>
+<a href="#contacto">Contacto</a>
+</nav>
+
+<div class="flex gap-2">
+<button id="uploadBtn" onclick="uploadImage()" class="hidden bg-blue-600 px-3 py-1 rounded">Subir</button>
+<button onclick="logout()" class="bg-red-600 px-3 py-1 rounded">Salir</button>
+</div>
+
+</div>
+</header>
+
+<!-- HERO -->
+<section id="inicio" class="min-h-screen flex items-center justify-center text-center">
+<div class="fade-in">
+<h2 class="text-5xl font-bold">Hola, soy <span class="text-blue-400">Mario</span></h2>
+<p class="text-gray-400 mt-4">Programador | FRC Cabots 🤖</p>
+</div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre" class="py-20 max-w-5xl mx-auto px-6 fade-in">
+<h2 class="text-3xl text-blue-400 mb-6">Sobre mí</h2>
+<p>
+Me llamo Mario Fernando Arvizu Flores, nací el 24 de diciembre de 2008 y soy de Caborca, Sonora.
+Me gusta la programación y la robótica, participo en FRC Cabots.
+</p>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="py-20 bg-gray-900 fade-in">
+<div class="max-w-5xl mx-auto px-6 grid md:grid-cols-3 gap-6">
+
+<div class="bg-gray-800 p-6 rounded">💻 Programación</div>
+<div class="bg-gray-800 p-6 rounded">🤖 Robótica</div>
+<div class="bg-gray-800 p-6 rounded">🧠 Lógica</div>
+
+</div>
+</section>
+
+<!-- PROYECTOS -->
+<section id="proyectos" class="py-20 max-w-6xl mx-auto px-6 fade-in">
+<h2 class="text-3xl text-blue-400 mb-6">Proyectos</h2>
+
+<div class="grid md:grid-cols-3 gap-6">
+<div class="bg-gray-800 p-6 rounded">Robot FRC</div>
+<div class="bg-gray-800 p-6 rounded">Página Web</div>
+<div class="bg-gray-800 p-6 rounded">Sistema POS</div>
+</div>
+
+</section>
+
+<!-- GALERÍA -->
+<section id="galeria" class="py-20 max-w-6xl mx-auto px-6 fade-in">
+<h2 class="text-3xl text-blue-400 mb-6">Galería</h2>
+
+<div id="galleryGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+</section>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 hidden flex items-center justify-center z-50">
+
+<button onclick="prevImage()" class="absolute left-5 text-white text-3xl">⬅</button>
+
+<img id="lightbox-img" class="max-w-[90%] max-h-[90%]">
+
+<button onclick="nextImage()" class="absolute right-5 text-white text-3xl">➡</button>
+
+</div>
+
+<!-- CONTACTO -->
+<section id="contacto" class="py-20 text-center">
+<h2 class="text-3xl text-blue-400">Contacto</h2>
+<p class="mt-4">marvizu2423@son.conalep.edu.mx</p>
+<p>6371336808</p>
+</section>
+
+<footer class="text-center p-6 border-t border-gray-800">
+© 2026 Mario Arvizu
+</footer>
+
+<script>
+
+// 🔥 CONFIG
+const MODO_VISITANTE = true;
+
+// LOGIN
+const ADMIN_USER="admin";
+const ADMIN_PASS="1234";
+
+function login(){
+if(user.value===ADMIN_USER && pass.value===ADMIN_PASS){
+loginScreen.style.display="none";
+localStorage.setItem("login","true");
+}else{
+error.classList.remove("hidden");
+}
+}
+
+function logout(){
+localStorage.removeItem("login");
+location.reload();
+}
+
+// GALERÍA
+let gallery = JSON.parse(localStorage.getItem("gallery")) || [];
+let currentIndex = 0;
+let autoSlide;
+
+function renderGallery(){
+galleryGrid.innerHTML="";
+gallery.forEach((src,i)=>{
+let img=document.createElement("img");
+img.src=src;
+img.className="rounded cursor-pointer hover:scale-105 transition";
+img.onclick=()=>openLightbox(i);
+galleryGrid.appendChild(img);
+});
+}
+
+function openLightbox(i){
+currentIndex=i;
+lightbox.classList.remove("hidden");
+lightboxImg.src=gallery[i];
+startAuto();
+}
+
+lightbox.onclick=()=>{
+lightbox.classList.add("hidden");
+clearInterval(autoSlide);
+}
+
+function nextImage(){
+currentIndex=(currentIndex+1)%gallery.length;
+lightboxImg.src=gallery[currentIndex];
+}
+
+function prevImage(){
+currentIndex=(currentIndex-1+gallery.length)%gallery.length;
+lightboxImg.src=gallery[currentIndex];
+}
+
+function startAuto(){
+clearInterval(autoSlide);
+autoSlide=setInterval(nextImage,3000);
+}
+
+function uploadImage(){
+let input=document.createElement("input");
+input.type="file";
+input.accept="image/*";
+
+input.onchange=()=>{
+let reader=new FileReader();
+reader.onload=e=>{
+gallery.push(e.target.result);
+localStorage.setItem("gallery",JSON.stringify(gallery));
+renderGallery();
+};
+reader.readAsDataURL(input.files[0]);
+};
+
+input.click();
+}
+
+// ANIMACIONES
+window.addEventListener('scroll', ()=>{
+document.querySelectorAll('.fade-in').forEach(el=>{
+if(el.getBoundingClientRect().top < window.innerHeight-50){
+el.classList.add('visible');
+}
+});
+});
+
+// INIT
+window.onload=()=>{
+
+if(MODO_VISITANTE){
+loginScreen.style.display="none";
+}else{
+if(localStorage.getItem("login")==="true"){
+loginScreen.style.display="none";
+uploadBtn.classList.remove("hidden");
+}
+}
+
+renderGallery();
+};
+
+</script>
+
+</body>
+</html>
